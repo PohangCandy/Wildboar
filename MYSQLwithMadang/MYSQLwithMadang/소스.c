@@ -10,28 +10,28 @@ typedef struct {
 
 int main()
 {
-	Book Books[10];
-	int i = 1;
+	/*반환된 행의 수*/
+	int num_ret;
 
-	/*도서 입력 함수*/
-	insert();
+	/*DBMS에 접속*/
+	EXEC SQL CONNECT : username IDENTIFIED BY : password;
 
-	/*파일에 저장된 데이터를 배열 Books[]에 저장*/
-	fp = fopen("book.dat", "rb");
-	bp = (Book*)calloc(1, sizeof(Book));
-
-	/*파일에서 책을 읽는다*/
-	while (fread(bp.sizeof(Book), 1, fp) != 0)
-	{
-		Books[i].bookid = bp->bookid;
-		strcpy(Books[i].bookname, bp->bookname);
-		strcpy(Books[i].publisher, bp->publisher);
-		Books[i].price = bp->price;
-		i++;
-	}
+	/*SQL 문 실행*/
+	EXEC SQL DECLARE c1 CURSOR FOR
+		SELECT bookname, publisher, price FROM BOOK;
+	EXEC SQL OPEN c1;
 
 	/*모든 도서보기 프로그램 호출*/
-	serch_all();
+	search_all();
 
-	/*기타 프로그램 코드*/
+	/*SQL 문 실행 결과 출력*/
+	for (;;) {
+		EXEC SQL FETCH c1 INTO : BOOK_rec;
+		print_rows(num_ret);
+	}
+	EXEC SQL CLOSE c1;
+
+	/*접속 해제*/
+	EXEC SQL COMMIT WORK RELEASE;
+
 }
